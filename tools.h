@@ -1,5 +1,5 @@
-#include "sys/time.h"
-#include "stdlib.h"
+#include <sys/time.h>
+#include <stdlib.h>
 
 struct timeval t1, t2;
 #define start_time()	do { gettimeofday(&t1, NULL); } while(0)
