@@ -35,6 +35,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * 假设物品的价值和重量都是正整数
@@ -81,6 +82,29 @@ int zero_one_package(struct thing* things_list, int num, int weight_limit)
 	return dp_array[num-1][weight_limit];
 }
 
+
+/**
+ * 根据状态转移方程，采用滚动数组的方式，优化内存使用，将二维数组优化成一维数组。
+ * 可以参考 0-1背包问题.png
+ */
+int zero_one_package_yh(struct thing* things_list, int num, int weight_limit)
+{
+	int*	dp_array = NULL;
+	int	i = 0;
+	int	j = 0;
+	int	get_this_value = 0;
+
+	dp_array = calloc(1, sizeof(int)*(weight_limit + 1));
+
+	for (i = 0; i < num; ++i) {
+		for (j = weight_limit; j >= things_list[i].weight; --j) {
+			get_this_value = dp_array[j - things_list[i].weight] + things_list[i].value;
+			dp_array[j] = dp_array[j] > get_this_value ? dp_array[j] : get_this_value;
+		}
+	}
+
+	return dp_array[weight_limit];
+}
 int main(int argc, char*argv[])
 {
 	struct thing thing_list[10] = {
@@ -96,5 +120,6 @@ int main(int argc, char*argv[])
 		{2, 120},
 	};
 	
-	printf("rst = %d.\r\n", zero_one_package(thing_list, 10, 30));
+	printf("rst = %d.\r\n", zero_one_package_yh(thing_list, 10, 30));
+	//printf("rst = %d.\r\n", zero_one_package(thing_list, 10, 30));
 }
