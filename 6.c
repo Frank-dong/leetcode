@@ -80,17 +80,47 @@ char * convert_z(char * s, int numRows)
 
 
 /** 
- * 这个题有两种思考路径，一种是从排布好的结构出发，寻找
- * 结果字符串与原字符串序列的关系。
- * 另一种是从原字符串出发，确定每一个字符在目标字符串的
- * 位置。相比较之下，第二种方式更容易实现。
+ * 这个题有两种大的解题思路，一种是暴力罗列，先得到每行的字母，
+ * 然后把所有行拼接起来，这种方式内存消耗大，因为要给每行分配内存
+ * 来临时存储字符串
+ *
+ * 另一种是通过计算新串与原串之间的对应关系，直接填充新串。这个
+ * 思路有两种实现方式，一种是从原字符串出发，遍历原字符串，将每
+ * 个字符填充到新串的指定位置上。另一种是从新串出发，逐个位置寻
+ * 找应该填充旧串的某个位置的字符。相比较来说，第二种更容易理解
+ * 和找到合适的规律，也就更容易实现一些。
  */
-char * convert(char * s, int numRows)
+char * convert_1(char * s, int numRows)
+{
+	int		str_len = 0;
+	int		pos = 0;
+	int		i = 0;
+	int		j = 0;
+	int		circle_len = 0;
+	char*	new_str = NULL;
+
+	if (numRows == 1) {
+		return s;
+	}
+	circle_len = 2 * numRows - 2;
+	str_len = strlen(s);
+	new_str = calloc(1, sizeof(char)*(str_len+1));	
+	for (i = 0; i < numRows; ++i) {
+		for (j = 0; j < str_len; ++j) {
+			if (j % circle_len == i || j % circle_len == (circle_len - i))
+				new_str[pos++] = *(s+j);
+		}
+	}
+	return new_str;
+}
+char * convert_2(char * s, int numRows)
 {
 	int	column = 0;
 	int	i = 0;
 	int	cur_col = 0;
 	int	direct = 0; 
+	int	rows = 0;
+	int*	len_list = NULL;
 	char*	new_str = NULL;
 	char**	col_list = NULL;
 	
@@ -99,10 +129,12 @@ char * convert(char * s, int numRows)
 		strcpy(new_str, s);
 		return new_str;	
 	}
-	column = strlen(s) > numRows ? numRows : strlen(s);	
-	col_list = calloc(1, sizeof(char*)*column);
-	for (i = 0; i < column; ++i) {
-		col_list[i] = calloc(1, sizeof(char)*(strlen(s)/column + 2));
+
+	rows = strlen(s) > numRows ? numRows : strlen(s);	
+	col_list = calloc(1, sizeof(void*)*rows);
+	for (i = 0; i < rows; ++i) {
+		//此处偷懒了，准确的做法应该是计算得到总共多少列，然后分配内存
+		col_list[i] = calloc(1, 1000);
 	}
 	
 	for (i = 0; i < strlen(s); ++i) {
@@ -112,10 +144,11 @@ char * convert(char * s, int numRows)
 		cur_col += (direct == 0 ? -1 : 1);
 	}
 	
-	for (i = 0; i < column; ++i) {
+	for (i = 0; i < rows; ++i) {
 		strcat(new_str, col_list[i]);
 		free(col_list[i]);
 	}	
+	free(len_list);
 	free(col_list);
 	return new_str;
 }
@@ -127,9 +160,10 @@ int main(int argc, char* argv[])
 	rst = convert_z(argv[1], atoi(argv[2]));
 	printf("rst = \r\n%s\r\n", rst);
 	free(rst);
-	rst = convert(argv[1], atoi(argv[2]));
+	rst = convert_1(argv[1], atoi(argv[2]));
 	printf("rst = \r\n%s\r\n", rst);
-	free(rst);
+	if (rst != argv[1])
+		free(rst);
 
 	return 0;
 }
