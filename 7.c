@@ -59,12 +59,42 @@ int reverse(int x)
 	return atoi(buf);	
 }
 
+/**
+ * 此方法是直接生成新的整数，数字顺序反向，就是要先取最低位
+ * 的数字，最后取高位的数字。这个可以通过取余数的方式得到。
+ */
+int reverse_1(int x)
+{
+	long long rst = 0;
+	int		quotient = 0;
+	int		remainder = 0;
+	int		first = 0;
+
+	while (1) {
+		if ((x / 10) == 0) {
+			rst = rst*10 + x;
+			break;
+		}
+		remainder = x % 10;
+		x = x/10;
+		if (first == 0) {
+			rst += remainder;
+			first = 1;
+		} else {
+			rst = (rst*10 + remainder);
+		}
+	}
+	if (rst > 0x7fffffff-1 || rst < (0-0x7fffffff))
+		return 0;
+	else
+		return (int)rst;
+}
 int main(int argc, char* argv[])
 {
 	char*	rst = NULL;
 
 	//printf("%d\r\n", atoi("42949672990"));	
-	printf("%d\r\n", reverse(atoi(argv[1])));
+	printf("%d\r\n", reverse_1(atoi(argv[1])));
 
 	return 0;
 }
