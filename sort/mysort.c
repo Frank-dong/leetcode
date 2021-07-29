@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/********************************************************
+ * 参考链接：
+ * https://www.cnblogs.com/onepixel/articles/7674659.html
+ * ******************************************************/
+
 void show_nums(int* nums, int nums_size)
 {
     for (int i = 0; i < nums_size; ++i) {
@@ -319,6 +324,264 @@ int select_sort_optimize(int* nums, int numsSize)
 }
 
 
+/**
+ * 插入排序(升序)
+ * 插入排序的思想是从第一个元素开始，向前对比，寻找合适
+ * 的位置插入，这个合适位置就是小于前一个元素，大于后一
+ * 个元素。遇到不合适的，就往后移动。
+ *
+ * 这个算法的时间复杂度与冒泡算法一样，最好情况就是O(n),
+ * 最差情况是O(n^2)
+ */
+int insert_sort(int* nums, int numsSize)
+{
+	int	current = 0;
+	int prev_index = 0;
+	int	i = 0;
+
+	for (i = 1; i < numsSize; ++i) {
+		current = nums[i];
+		prev_index = i - 1;
+		// 移动大于目标值的元素
+		while (prev_index >= 0 && current < nums[prev_index]) {
+			nums[prev_index+1] = nums[prev_index];
+			--prev_index;
+		}
+		// 插入目标值
+		nums[prev_index+1] = current;	
+	}
+	return 0;
+}
+
+
+/**
+ * 希尔排序
+ * 希尔排序其实也是一种插入排序，是对简单插入排序的一种优化,
+ * 上面的插入排序中，每次都是挨个比较。希尔排序的思想就是分
+ * 几轮，每轮以不同的间隔来比较，从结果上来看，就是先大体上
+ * 有序，再逐步调整，最后达到最终有序.
+ *
+ * 假设一组数：83 44 15 17 40 74 65 8 84 93
+ * 第一轮间隔为5 (nums/2), 相当于将所有数分成5组，每组两个数
+ * 进行插入排序。
+ * 83 74
+ * 44 65
+ * 15 8
+ * 17 84
+ * 40 93
+ *
+ * 得到 74 44 8 17 40 83 65 15 84 93
+ * 第二轮间隔调整为2 (step/=2)，相当于将所有数分成2组，每组
+ * 5个数，进行插入排序。
+ * 74 8  40 65 84
+ * 44 17 83 15 93
+ *
+ * 得到 8 15 40 17 65 44 74 83 84 93
+ * 第三轮间隔调整为1, 相当于最原始的插入排序，但是相比最开始，
+ * 数据已经大致有序，调整起来就没有大范围的移动数据了
+ *
+ * 参考文章：
+ * https://www.cnblogs.com/chengxiao/p/6104371.html
+ */
+int shell_sort(int* nums, int numsSize)
+{
+	int	step = numsSize/2;
+	int	prev_index = 0;
+	int	current = 0;
+	int	i = 0;
+	int	j = 0;
+
+	// 分若干轮来完成
+	while (step > 0) {
+		// 每轮step组
+		for (i = 0; i < step; ++i) {
+			// 遍历完每组的值
+			for (j = i + step; j < numsSize; j += step) {
+				current = nums[j];
+				prev_index = j - step;
+				while (prev_index >= 0 && current < nums[prev_index]) {
+					nums[prev_index + step] = nums[prev_index];
+					prev_index -= step;
+				}
+				nums[prev_index + step] = current;
+			}
+		}
+		step /= 2;
+	}
+
+	return 0;
+}
+
+
+/**
+ * 归并排序
+ * 归并排序也是分治思想的一种，先将数组拆分成两个小的数组单元，
+ * 使其分别有序，然后再合并两个已经有序的数组。其中对于拆分出
+ * 来的小的数组单元排序也是利用这个方法，所以可以使用递归的方
+ * 式来实现。
+ * 拆分的过程好理解，归并的过程就相当于两队已经按大小个排序的
+ * 学生按照大小个合并成一个队伍一样，每次从两个队伍中取个字低
+ * 的往新队伍后面跟，最终合并成一个队伍。
+ *
+ * 错误点1:memcpy的第一个参数nums，如果是按照int来步进单元，则
+ * 应该是nums+start，如果是强转成char*，步进单位是1，则应该是
+ * (char*)nums + start*sizeof(int)
+ */
+
+int merge_sort_merge(int* nums, int start, int mid, int end, int* tmp)
+{
+	int	p1 = start;
+	int	p2 = mid + 1;
+	int	i = 0;
+
+	//printf("list1: ");
+	//show_nums(nums + start, mid - start + 1);
+	//printf("list2: ");
+	//show_nums(nums + mid + 1, end - mid);
+	for (i = 0; p1 <= mid && p2 <= end; ++i) {
+		if (nums[p1] < nums[p2]) {
+			tmp[i] = nums[p1++];
+		} else {
+			tmp[i] = nums[p2++];
+		}
+	}
+
+	if (p1 > mid) {
+		while (p2 <= end)
+			tmp[i++] = nums[p2++];
+	}
+	if (p2 > end) {
+		while (p1 <= mid) {
+			tmp[i++] = nums[p1++];
+		}
+	}
+	// 错误点1
+	memcpy((char*)nums + start*sizeof(int), tmp, (end - start + 1)*sizeof(int));
+	//memcpy(nums + start, tmp, (end - start + 1)*sizeof(int));
+	//printf("merge[%d-%d-%d], end-->", start, mid, end);
+	//show_nums(nums+start, end - start + 1);
+	return 0;
+}
+int merge_sort_by_index(int* nums, int start, int end, int* tmp)
+{
+	if (start >= end) {
+		return 0;
+	}
+	//show_nums(nums, end - start + 1);
+	int	mid = (start + end)/2;
+
+	// 先分
+	merge_sort_by_index(nums, start, mid, tmp);
+	merge_sort_by_index(nums, mid + 1, end, tmp);
+
+	// 后治
+	merge_sort_merge(nums, start, mid, end, tmp);
+}
+int merge_sort(int* nums, int numsSize)
+{
+	int*	tmp = calloc(1, sizeof(int)*numsSize);
+	merge_sort_by_index(nums, 0, numsSize - 1, tmp);
+
+	return 0;
+}
+
+
+/**
+ * 计数排序
+ * 计数排序的思想是申请一个数组，将数值作为下标，对每个位置
+ * 上的数值进行计数，由于数组下标本身就是有序的，所以只需要
+ * 遍历一次，就可以把所有值填完，然后再展开即可。所以技术排
+ * 序的算法复杂度是O(n).
+ * 但是这个算法有一个问题就是空间浪费比较严重，比如[1, 50, 100]
+ * 只有三个数的排序，就需要申请100个int型空间。第二个问题就是
+ * 这个算法也只适合整数排序,比较受局限。
+ *
+ * 适用于一些数值跨度不是很大的排序场景
+ *
+ * 参考文章：
+ * https://www.cnblogs.com/xiaochuan94/p/11198610.html
+ */
+int count_sort(int* nums, int numsSize)
+{
+	int min = nums[0];
+	int	max = nums[0];
+	int	i = 0;
+	int	j = 0;
+	int k = 0;
+	int* array = NULL;
+
+	// 第一次遍历找出最大值和最小值
+	for (i = 1; i < numsSize; ++i) {
+		if (nums[i] > max)
+			max = nums[i];
+		else if (nums[i] < min)
+			min = nums[i];
+	}
+	if (min == max)
+		return 0;
+
+	// 申请一个max-mix+1个整型空间
+	array = calloc(1, sizeof(int)*(max - min + 1));
+	
+	// 遍历统计不同值的个数(值被记录成了下标)
+	for (i = 0; i < numsSize; ++i) {
+		array[nums[i]-min] += 1;
+	}
+	
+	// 将统计个数的数组展开
+	for (i = 0; i < (max - min + 1); ++i) {
+		for (j = 0; j < array[i]; ++j) {
+			// 值就是下标	
+			nums[k++] = i + min;	
+		}
+	}
+
+	free(array);
+	return 0;
+}
+
+
+
+/**
+ * 桶排序
+ * 桶排序可以看成是对计数排序的一种改进，由于计数排序如果数值
+ * 跨度较大，会导致空间浪费比较严重的问题. 所以改进成划分成几
+ * 个有序的区间，然后每个区间里面排序，最后再组合
+ */
+struct bucket_node {
+	int val;
+	struct bucket_node* next;
+};
+int bucket_sort(int* nums, int numsSize)
+{
+	int	i = 0;
+	int	step = 0;
+	int	bucket_nums = 0;
+	int	min = nums[0];
+	int	max = nums[0];
+	struct bucket_node** bucket_list = NULL;
+	struct bucket_node* node = NULL;
+
+	// 第一次遍历找出最大值和最小值
+	for (i = 1; i < numsSize; ++i) {
+		if (nums[i] > max)
+			max = nums[i];
+		else if (nums[i] < min)
+			min = nums[i];
+	}
+	if (min == max)
+		return 0;
+
+	// 暂时假定使用3个桶
+	bucket_nums = 3;
+	step = (max - min + 1)/3;
+
+	bucket_list = calloc(1, sizeof(struct bucket_node)*bucket_nums);
+	//将数据填入桶中
+	for (i = 0; i < numsSize; ++i) {
+		bubble_list[]	
+	}
+}
 
 
 
