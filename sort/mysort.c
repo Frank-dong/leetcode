@@ -11,11 +11,21 @@ void show_nums(int* nums, int nums_size)
 
 /**
  * 冒泡排序 (升序)
+ * 冒泡算法的思想是通过比较相邻的两个数，
+ * 使得较大(小)的数往后面挪动，这样一趟下来
+ * 就会产生无序数列中的最大值排在有序数列的
+ * 后面，最后多轮下来就形成了一个升序(降序)
+ * 的数列.
+ * 这种排序的过程，看起来像下沉。
+ * 也可以从后往前遍历，看起来则像上浮(冒泡)
+ *
  * 算法时间复杂度是O(n^2)
  * 但其实最好的情况就是本身就是有序的，即
- * 只需要遍历一遍即可，也就是O(n)
+ * 只需要遍历一遍即可,也就是每两个相邻的数值
+ * 都没有发生过交换，也就是本身就是有序的，
+ * 所以一遍就结束了，也就是O(n)
  * 此时需要增加一个标志来判断是否发生过
- * 交换
+ * 交换.
  */
 int bubble_sort(int* nums, int numsSize)
 {
@@ -24,12 +34,15 @@ int bubble_sort(int* nums, int numsSize)
     int tmp = 0;
 	int swap_flag = 0;
 
+	// 最后只剩下一个数不用比较，所以外层循环
+	// 是numsSize-1
     for (i = 0; i < numsSize-1; ++i) {
-        for (j = i + 1; j < numsSize; ++j) {
-            if (nums[i] > nums[j]) {
-                tmp = nums[i];
-                nums[i] = nums[j];
-                nums[j] = tmp;
+		// 每经过一轮，就会少一个数值参与比较
+        for (j = 0; j < numsSize-1-i; ++j) {
+            if (nums[j] > nums[j+1]) {
+                tmp = nums[j];
+                nums[j] = nums[j+1];
+                nums[j+1] = tmp;
 				swap_flag = 1;
             }
         }
@@ -101,11 +114,11 @@ int bubble_sort_d(void* nums, int unit_size, int numsSize,
 	int swap_flag = 0;
 
     for (i = 0; i < numsSize-1; ++i) {
-        for (j = i + 1; j < numsSize; ++j) {
-            if (compar((char*)nums+i*unit_size, 
-						(char*)nums+j*unit_size) > 0) {
-                SWAP_BY_BYTE((char*)nums+i*unit_size, 
-                    (char*)nums+j*unit_size, unit_size);
+        for (j = 0; j < numsSize - 1 - i; ++j) {
+            if (compar((char*)nums+j*unit_size, 
+						(char*)nums+(j+1)*unit_size) > 0) {
+                SWAP_BY_BYTE((char*)nums+j*unit_size, 
+                    (char*)nums+(j+1)*unit_size, unit_size);
 				swap_flag = 1;
             }
         }
