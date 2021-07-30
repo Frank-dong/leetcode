@@ -13,5 +13,6 @@ int	insert_sort(int* nums, int numsSize);
 int shell_sort(int* nums, int numsSize);
 int merge_sort(int* nums, int numsSize);
 int count_sort(int* nums, int numsSize);
+int randix_sort(int* nums, int numsSize);
 
 #endif

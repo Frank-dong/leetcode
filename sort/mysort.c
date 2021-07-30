@@ -1,17 +1,49 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /********************************************************
  * 参考链接：
  * https://www.cnblogs.com/onepixel/articles/7674659.html
+ * https://www.cnblogs.com/lqminn/p/3642027.html
+ *
+ * 排序算法的稳定性：
+ * 假定在待排序的数列中有多个相同的数值，经过排序后，这些
+ * 相同的数值的相对位置不发生改变，即称之为稳定的排序算法
+ * >>冒泡算法是通过相邻数值比较而确定位置的，所以冒泡算法可
+ * 做到稳定的排序.如果相等元素也交换的话，就是不稳定的了。
+ *
+ * >>快速排序由于是不断选取一个值，将待排序列分在两边，所以
+ * 相同数值的元素的相对位置在不同轮次的时候可能会变化，所以
+ * 是一种不稳定的排序算法。
+ * 
+ * >>选择排序是通过在无序数列中找出一个最值无序数列第一个值
+ * 进行交换，而被交换的无序数列的第一个元素可能与后面某个值
+ * 相等，交换后，他们的相对位置就发生了变化。所以也是不稳定的。
+ *
+ * >>插入排序是后面元素逐个与前面元素进行比较，相同的元素
+ * 可以形成边界条件，所以也可以实现稳定的排序。
+ *
+ * >>希尔排序是插入排序的升级版，通过设置不同的Gap，来加速
+ * 比对过程，那么如果相同的元素如果被划分在不同的组，就有可
+ * 能发生相对位置变化，所以也是不稳定的。
+ *
+ * >>归并排序是先将数列打散，然后合并重组，重组过程其实类似
+ * 插入排序，所以也是稳定的排序算法。
+ *
+ * >>计数排序是利用数组下标来记录数值的，可以通过调整记录顺
+ * 序和展开顺序来实现稳定的排序. 比如顺序遍历，先记录的，先
+ * 展开; 或者逆序遍历，先记录，后展开。
+ *
+ * >>基数排序类似计数排序类似，所以也是稳定的排序算法。
  * ******************************************************/
 
 void show_nums(int* nums, int nums_size)
 {
-    for (int i = 0; i < nums_size; ++i) {
-        printf("%d ", nums[i]);
-    }
-    printf("\r\n");
+     for (int i = 0; i < nums_size; ++i) {
+          printf("%d ", nums[i]);
+     }
+     printf("\r\n");
 }
 
 /**
@@ -34,29 +66,29 @@ void show_nums(int* nums, int nums_size)
  */
 int bubble_sort(int* nums, int numsSize)
 {
-    int i = 0;
-    int j = 0;
-    int tmp = 0;
-	int swap_flag = 0;
+     int i = 0;
+     int j = 0;
+     int tmp = 0;
+     int swap_flag = 0;
 
-	// 最后只剩下一个数不用比较，所以外层循环
-	// 是numsSize-1
-    for (i = 0; i < numsSize-1; ++i) {
-		// 每经过一轮，就会少一个数值参与比较
-        for (j = 0; j < numsSize-1-i; ++j) {
-            if (nums[j] > nums[j+1]) {
-                tmp = nums[j];
-                nums[j] = nums[j+1];
-                nums[j+1] = tmp;
-				swap_flag = 1;
-            }
-        }
+     // 最后只剩下一个数不用比较，所以外层循环
+     // 是numsSize-1
+     for (i = 0; i < numsSize-1; ++i) {
+          // 每经过一轮，就会少一个数值参与比较
+          for (j = 0; j < numsSize-1-i; ++j) {
+               if (nums[j] > nums[j+1]) {
+                    tmp = nums[j];
+                    nums[j] = nums[j+1];
+                    nums[j+1] = tmp;
+                    swap_flag = 1;
+               }
+          }
 
-		if (swap_flag == 0)
-			break;
-    }
+          if (swap_flag == 0)
+               break;
+     }
 
-    return 0;
+     return 0;
 }
 
 /**
@@ -72,28 +104,27 @@ int bubble_sort(int* nums, int numsSize)
  * 冲突
  */ 
 #define SWAP_BY_BYTE(a, b, size)    \
-do {                                \
-    int     __unit_size = (size);   \
-    char*   __pa = (a), *__pb = (b);    \
-    char    __tmp;                    \
-    do {                            \
-        __tmp = *__pa;                  \
-        *__pa++ = *__pb;                \
-        *__pb++ = __tmp;                \
-    } while (--__unit_size > 0);          \
-} while (0)
+     do {                                \
+          int     __unit_size = (size);   \
+          char*   __pa = (a), *__pb = (b);    \
+          char    __tmp;                    \
+          do {                            \
+               __tmp = *__pa;                  \
+               *__pa++ = *__pb;                \
+               *__pb++ = __tmp;                \
+          } while (--__unit_size > 0);          \
+     } while (0)
 
 void swap_func(void* a, void* b, int size)
 {
-    int     unit_size = size;     
-    char*   pa = a, *pb = b;    
-    char    tmp;                   
-    do {                            
-        printf("tmp = 0x%x, pa = 0x%x\r\n", tmp, pa);   
-        tmp = *pa;                 
-        *pa++ = *pb;               
-        *pb++ = tmp;               
-    } while (--unit_size > 0);      
+     int     unit_size = size;     
+     char*   pa = a, *pb = b;    
+     char    tmp;                   
+     do {                            
+          tmp = *pa;                 
+          *pa++ = *pb;               
+          *pb++ = tmp;               
+     } while (--unit_size > 0);      
 }
 /**
  * 冒泡排序，自定义升序或降序
@@ -112,26 +143,26 @@ void swap_func(void* a, void* b, int size)
  * 换
  */
 int bubble_sort_d(void* nums, int unit_size, int numsSize, 
-                            int (*compar)(void*, void*))
+          int (*compar)(void*, void*))
 {
-    int i = 0;
-    int j = 0;
-	int swap_flag = 0;
+     int i = 0;
+     int j = 0;
+     int swap_flag = 0;
 
-    for (i = 0; i < numsSize-1; ++i) {
-        for (j = 0; j < numsSize - 1 - i; ++j) {
-            if (compar((char*)nums+j*unit_size, 
-						(char*)nums+(j+1)*unit_size) > 0) {
-                SWAP_BY_BYTE((char*)nums+j*unit_size, 
-                    (char*)nums+(j+1)*unit_size, unit_size);
-				swap_flag = 1;
-            }
-        }
-		if (swap_flag == 0)
-			break;
-    }
+     for (i = 0; i < numsSize-1; ++i) {
+          for (j = 0; j < numsSize - 1 - i; ++j) {
+               if (compar((char*)nums+j*unit_size, 
+                              (char*)nums+(j+1)*unit_size) > 0) {
+                    SWAP_BY_BYTE((char*)nums+j*unit_size, 
+                              (char*)nums+(j+1)*unit_size, unit_size);
+                    swap_flag = 1;
+               }
+          }
+          if (swap_flag == 0)
+               break;
+     }
 
-    return 0;
+     return 0;
 }
 
 /**
@@ -174,40 +205,40 @@ int bubble_sort_d(void* nums, int unit_size, int numsSize,
  */
 int quick_sort(int* nums, int begin, int end)
 {
-	int	left = begin;
-	int	right = end;
-	int	anchor = nums[begin];	// 选取锚点值，相当于
-								// 锚点位置空出了
+     int     left = begin;
+     int     right = end;
+     int     anchor = nums[begin];     // 选取锚点值，相当于
+     // 锚点位置空出了
 
-	if (!nums || end < begin || begin < 0)
-		return 0;
+     if (!nums || end < begin || begin < 0)
+          return 0;
 
-	printf("anchor = %d, begin = %d, end = %d\r\n", anchor, begin, end);
-	while (left < right) {
-		// 寻找小于锚点值的值来向锚点左边填空
-		// 问题点1
-		while (left < right && nums[right] >= anchor)
-			--right;
+     printf("anchor = %d, begin = %d, end = %d\r\n", anchor, begin, end);
+     while (left < right) {
+          // 寻找小于锚点值的值来向锚点左边填空
+          // 问题点1
+          while (left < right && nums[right] >= anchor)
+               --right;
 
-		// 问题点2
-		if (right > left)
-			nums[left++] = nums[right];
-		
-		// 寻找大于锚点值的值来向锚点右边填空
-		while (left < right && nums[left] <= anchor)
-			++left;
-		if (right > left)
-			nums[right--] = nums[left];
-	}
-	// 将锚点值填入分界位置
-	nums[left] = anchor;
+          // 问题点2
+          if (right > left)
+               nums[left++] = nums[right];
 
-	// 对左边部分用同样的方法排序
-	// 问题点3
-	quick_sort(nums, begin, left - 1);
-	quick_sort(nums, left + 1, end);
+          // 寻找大于锚点值的值来向锚点右边填空
+          while (left < right && nums[left] <= anchor)
+               ++left;
+          if (right > left)
+               nums[right--] = nums[left];
+     }
+     // 将锚点值填入分界位置
+     nums[left] = anchor;
 
-	return 0;
+     // 对左边部分用同样的方法排序
+     // 问题点3
+     quick_sort(nums, begin, left - 1);
+     quick_sort(nums, left + 1, end);
+
+     return 0;
 }
 
 /**
@@ -215,27 +246,27 @@ int quick_sort(int* nums, int begin, int end)
  */
 int quick_sort_d(int* nums, int start, int end)
 {
-	int	l = start;
-	int	r = end;
-	int	anchor = nums[start];
+     int     l = start;
+     int     r = end;
+     int     anchor = nums[start];
 
-	if (!nums || end < start || start < 0)
-		return 0;
-	while (l < r) {
-		while (l < r && nums[r] >= anchor)
-			--r;
-		if (l < r)
-			nums[l++] = nums[r];
-		
-		while (l < r && nums[l] <= anchor)
-			++l;
-		if (l < r)
-			nums[r--] = nums[l];
-	}
-	nums[l] = anchor;
+     if (!nums || end < start || start < 0)
+          return 0;
+     while (l < r) {
+          while (l < r && nums[r] >= anchor)
+               --r;
+          if (l < r)
+               nums[l++] = nums[r];
 
-	quick_sort_d(nums, start, l - 1);
-	quick_sort_d(nums, l + 1, end);
+          while (l < r && nums[l] <= anchor)
+               ++l;
+          if (l < r)
+               nums[r--] = nums[l];
+     }
+     nums[l] = anchor;
+
+     quick_sort_d(nums, start, l - 1);
+     quick_sort_d(nums, l + 1, end);
 }
 
 /**
@@ -246,29 +277,29 @@ int quick_sort_d(int* nums, int start, int end)
  */
 int select_sort(int* nums, int numsSize)
 {
-	int	i = 0;
-	int	tail = 0;
-	int	tmp = 0;
-	int	target = 0;
+     int     i = 0;
+     int     tail = 0;
+     int     tmp = 0;
+     int     target = 0;
 
-	while (tail < numsSize) {
-		// 每次选取有序队尾元素为比较对象
-		target = tail;
-		// 遍历得到最小(大)的值，记录其下标
-		for (i = tail + 1; i < numsSize; ++i) {
-			if (nums[i] < nums[target]) {
-				target = i;
-			}
-		}
-		if (target != tail) {
-			// 与有序队尾值进行交换
-			tmp = nums[tail];
-			nums[tail] = nums[target];
-			nums[target] = tmp;
-		}
-		++tail;
-	}
-	return 0;
+     while (tail < numsSize) {
+          // 每次选取有序队尾元素为比较对象
+          target = tail;
+          // 遍历得到最小(大)的值，记录其下标
+          for (i = tail + 1; i < numsSize; ++i) {
+               if (nums[i] < nums[target]) {
+                    target = i;
+               }
+          }
+          if (target != tail) {
+               // 与有序队尾值进行交换
+               tmp = nums[tail];
+               nums[tail] = nums[target];
+               nums[target] = tmp;
+          }
+          ++tail;
+     }
+     return 0;
 }
 
 /**
@@ -282,45 +313,45 @@ int select_sort(int* nums, int numsSize)
  */
 int select_sort_optimize(int* nums, int numsSize)
 {
-	int	i = 0;
-	int	tail = 0;				// 前半部分序列尾
-	int	head = numsSize - 1;	// 后半部分序列头
-	int	min_target = tail;
-	int	max_target = head;
-	int	tmp = 0;
+     int     i = 0;
+     int     tail = 0;                    // 前半部分序列尾
+     int     head = numsSize - 1;     // 后半部分序列头
+     int     min_target = tail;
+     int     max_target = head;
+     int     tmp = 0;
 
-	while (tail <= head) {
-		min_target = tail;
-		max_target = head;
-		// 遍历得到最大值和最小值
-		for (i = tail; i <= head; ++i) {
-			if (nums[i] < nums[min_target])
-				min_target = i;
-			if (nums[i] > nums[max_target])
-				max_target = i;
-		}
-		
-		if (min_target != tail) {
-			// 如果最大值刚好是有序数列队尾，则需要记录下他被交换
-			// 的位置
-			if (max_target == tail)
-				max_target = min_target;
+     while (tail <= head) {
+          min_target = tail;
+          max_target = head;
+          // 遍历得到最大值和最小值
+          for (i = tail; i <= head; ++i) {
+               if (nums[i] < nums[min_target])
+                    min_target = i;
+               if (nums[i] > nums[max_target])
+                    max_target = i;
+          }
 
-			tmp = nums[tail];
-			nums[tail] = nums[min_target];
-			nums[min_target] = tmp;
-		}
+          if (min_target != tail) {
+               // 如果最大值刚好是有序数列队尾，则需要记录下他被交换
+               // 的位置
+               if (max_target == tail)
+                    max_target = min_target;
 
-		if (max_target != head) {
-			tmp = nums[head];
-			nums[head] = nums[max_target];
-			nums[max_target] = tmp;
-		}
+               tmp = nums[tail];
+               nums[tail] = nums[min_target];
+               nums[min_target] = tmp;
+          }
 
-		++tail;
-		--head;
-	}
-	return 0;
+          if (max_target != head) {
+               tmp = nums[head];
+               nums[head] = nums[max_target];
+               nums[max_target] = tmp;
+          }
+
+          ++tail;
+          --head;
+     }
+     return 0;
 }
 
 
@@ -335,22 +366,22 @@ int select_sort_optimize(int* nums, int numsSize)
  */
 int insert_sort(int* nums, int numsSize)
 {
-	int	current = 0;
-	int prev_index = 0;
-	int	i = 0;
+     int     current = 0;
+     int prev_index = 0;
+     int     i = 0;
 
-	for (i = 1; i < numsSize; ++i) {
-		current = nums[i];
-		prev_index = i - 1;
-		// 移动大于目标值的元素
-		while (prev_index >= 0 && current < nums[prev_index]) {
-			nums[prev_index+1] = nums[prev_index];
-			--prev_index;
-		}
-		// 插入目标值
-		nums[prev_index+1] = current;	
-	}
-	return 0;
+     for (i = 1; i < numsSize; ++i) {
+          current = nums[i];
+          prev_index = i - 1;
+          // 移动大于目标值的元素
+          while (prev_index >= 0 && current < nums[prev_index]) {
+               nums[prev_index+1] = nums[prev_index];
+               --prev_index;
+          }
+          // 插入目标值
+          nums[prev_index+1] = current;     
+     }
+     return 0;
 }
 
 
@@ -385,31 +416,31 @@ int insert_sort(int* nums, int numsSize)
  */
 int shell_sort(int* nums, int numsSize)
 {
-	int	step = numsSize/2;
-	int	prev_index = 0;
-	int	current = 0;
-	int	i = 0;
-	int	j = 0;
+     int     step = numsSize/2;
+     int     prev_index = 0;
+     int     current = 0;
+     int     i = 0;
+     int     j = 0;
 
-	// 分若干轮来完成
-	while (step > 0) {
-		// 每轮step组
-		for (i = 0; i < step; ++i) {
-			// 遍历完每组的值
-			for (j = i + step; j < numsSize; j += step) {
-				current = nums[j];
-				prev_index = j - step;
-				while (prev_index >= 0 && current < nums[prev_index]) {
-					nums[prev_index + step] = nums[prev_index];
-					prev_index -= step;
-				}
-				nums[prev_index + step] = current;
-			}
-		}
-		step /= 2;
-	}
+     // 分若干轮来完成
+     while (step > 0) {
+          // 每轮step组
+          for (i = 0; i < step; ++i) {
+               // 遍历完每组的值
+               for (j = i + step; j < numsSize; j += step) {
+                    current = nums[j];
+                    prev_index = j - step;
+                    while (prev_index >= 0 && current < nums[prev_index]) {
+                         nums[prev_index + step] = nums[prev_index];
+                         prev_index -= step;
+                    }
+                    nums[prev_index + step] = current;
+               }
+          }
+          step /= 2;
+     }
 
-	return 0;
+     return 0;
 }
 
 
@@ -430,59 +461,59 @@ int shell_sort(int* nums, int numsSize)
 
 int merge_sort_merge(int* nums, int start, int mid, int end, int* tmp)
 {
-	int	p1 = start;
-	int	p2 = mid + 1;
-	int	i = 0;
+     int     p1 = start;
+     int     p2 = mid + 1;
+     int     i = 0;
 
-	//printf("list1: ");
-	//show_nums(nums + start, mid - start + 1);
-	//printf("list2: ");
-	//show_nums(nums + mid + 1, end - mid);
-	for (i = 0; p1 <= mid && p2 <= end; ++i) {
-		if (nums[p1] < nums[p2]) {
-			tmp[i] = nums[p1++];
-		} else {
-			tmp[i] = nums[p2++];
-		}
-	}
+     //printf("list1: ");
+     //show_nums(nums + start, mid - start + 1);
+     //printf("list2: ");
+     //show_nums(nums + mid + 1, end - mid);
+     for (i = 0; p1 <= mid && p2 <= end; ++i) {
+          if (nums[p1] < nums[p2]) {
+               tmp[i] = nums[p1++];
+          } else {
+               tmp[i] = nums[p2++];
+          }
+     }
 
-	if (p1 > mid) {
-		while (p2 <= end)
-			tmp[i++] = nums[p2++];
-	}
-	if (p2 > end) {
-		while (p1 <= mid) {
-			tmp[i++] = nums[p1++];
-		}
-	}
-	// 错误点1
-	memcpy((char*)nums + start*sizeof(int), tmp, (end - start + 1)*sizeof(int));
-	//memcpy(nums + start, tmp, (end - start + 1)*sizeof(int));
-	//printf("merge[%d-%d-%d], end-->", start, mid, end);
-	//show_nums(nums+start, end - start + 1);
-	return 0;
+     if (p1 > mid) {
+          while (p2 <= end)
+               tmp[i++] = nums[p2++];
+     }
+     if (p2 > end) {
+          while (p1 <= mid) {
+               tmp[i++] = nums[p1++];
+          }
+     }
+     // 错误点1
+     memcpy((char*)nums + start*sizeof(int), tmp, (end - start + 1)*sizeof(int));
+     //memcpy(nums + start, tmp, (end - start + 1)*sizeof(int));
+     //printf("merge[%d-%d-%d], end-->", start, mid, end);
+     //show_nums(nums+start, end - start + 1);
+     return 0;
 }
 int merge_sort_by_index(int* nums, int start, int end, int* tmp)
 {
-	if (start >= end) {
-		return 0;
-	}
-	//show_nums(nums, end - start + 1);
-	int	mid = (start + end)/2;
+     if (start >= end) {
+          return 0;
+     }
+     //show_nums(nums, end - start + 1);
+     int     mid = (start + end)/2;
 
-	// 先分
-	merge_sort_by_index(nums, start, mid, tmp);
-	merge_sort_by_index(nums, mid + 1, end, tmp);
+     // 先分
+     merge_sort_by_index(nums, start, mid, tmp);
+     merge_sort_by_index(nums, mid + 1, end, tmp);
 
-	// 后治
-	merge_sort_merge(nums, start, mid, end, tmp);
+     // 后治
+     merge_sort_merge(nums, start, mid, end, tmp);
 }
 int merge_sort(int* nums, int numsSize)
 {
-	int*	tmp = calloc(1, sizeof(int)*numsSize);
-	merge_sort_by_index(nums, 0, numsSize - 1, tmp);
+     int*     tmp = calloc(1, sizeof(int)*numsSize);
+     merge_sort_by_index(nums, 0, numsSize - 1, tmp);
 
-	return 0;
+     return 0;
 }
 
 
@@ -503,87 +534,162 @@ int merge_sort(int* nums, int numsSize)
  */
 int count_sort(int* nums, int numsSize)
 {
-	int min = nums[0];
-	int	max = nums[0];
-	int	i = 0;
-	int	j = 0;
-	int k = 0;
-	int* array = NULL;
+     int min = nums[0];
+     int     max = nums[0];
+     int     i = 0;
+     int     j = 0;
+     int k = 0;
+     int* array = NULL;
 
-	// 第一次遍历找出最大值和最小值
-	for (i = 1; i < numsSize; ++i) {
-		if (nums[i] > max)
-			max = nums[i];
-		else if (nums[i] < min)
-			min = nums[i];
-	}
-	if (min == max)
-		return 0;
+     // 第一次遍历找出最大值和最小值
+     for (i = 1; i < numsSize; ++i) {
+          if (nums[i] > max)
+               max = nums[i];
+          else if (nums[i] < min)
+               min = nums[i];
+     }
+     if (min == max)
+          return 0;
 
-	// 申请一个max-mix+1个整型空间
-	array = calloc(1, sizeof(int)*(max - min + 1));
-	
-	// 遍历统计不同值的个数(值被记录成了下标)
-	for (i = 0; i < numsSize; ++i) {
-		array[nums[i]-min] += 1;
-	}
-	
-	// 将统计个数的数组展开
-	for (i = 0; i < (max - min + 1); ++i) {
-		for (j = 0; j < array[i]; ++j) {
-			// 值就是下标	
-			nums[k++] = i + min;	
-		}
-	}
+     // 申请一个max-mix+1个整型空间
+     array = calloc(1, sizeof(int)*(max - min + 1));
 
-	free(array);
-	return 0;
+     // 遍历统计不同值的个数(值被记录成了下标)
+     for (i = 0; i < numsSize; ++i) {
+          array[nums[i]-min] += 1;
+     }
+
+     // 将统计个数的数组展开
+     for (i = 0; i < (max - min + 1); ++i) {
+          for (j = 0; j < array[i]; ++j) {
+               // 值就是下标     
+               nums[k++] = i + min;     
+          }
+     }
+
+     free(array);
+     return 0;
 }
 
 
 
+#if 0
 /**
- * 桶排序
+ * 桶排序(未完成(分成若干个桶来排序，每个桶中还是需要采用某种方式排序，
+ * 只相当于将更大排序分成了几个小段来排序))
+ *
  * 桶排序可以看成是对计数排序的一种改进，由于计数排序如果数值
  * 跨度较大，会导致空间浪费比较严重的问题. 所以改进成划分成几
  * 个有序的区间，然后每个区间里面排序，最后再组合
  */
 struct bucket_node {
-	int val;
-	struct bucket_node* next;
+     int val;
+     struct bucket_node* next;
 };
 int bucket_sort(int* nums, int numsSize)
 {
-	int	i = 0;
-	int	step = 0;
-	int	bucket_nums = 0;
-	int	min = nums[0];
-	int	max = nums[0];
-	struct bucket_node** bucket_list = NULL;
-	struct bucket_node* node = NULL;
+     int     i = 0;
+     int     step = 0;
+     int     bucket_nums = 0;
+     int     min = nums[0];
+     int     max = nums[0];
+     struct bucket_node** bucket_list = NULL;
+     struct bucket_node* node = NULL;
 
-	// 第一次遍历找出最大值和最小值
-	for (i = 1; i < numsSize; ++i) {
-		if (nums[i] > max)
-			max = nums[i];
-		else if (nums[i] < min)
-			min = nums[i];
-	}
-	if (min == max)
-		return 0;
+     // 第一次遍历找出最大值和最小值
+     for (i = 1; i < numsSize; ++i) {
+          if (nums[i] > max)
+               max = nums[i];
+          else if (nums[i] < min)
+               min = nums[i];
+     }
+     if (min == max)
+          return 0;
 
-	// 暂时假定使用3个桶
-	bucket_nums = 3;
-	step = (max - min + 1)/3;
+     // 暂时假定使用3个桶
+     bucket_nums = 3;
+     step = (max - min + 1)/3;
 
-	bucket_list = calloc(1, sizeof(struct bucket_node)*bucket_nums);
-	//将数据填入桶中
-	for (i = 0; i < numsSize; ++i) {
-		bubble_list[]	
-	}
+     bucket_list = calloc(1, sizeof(struct bucket_node)*bucket_nums);
+     //将数据填入桶中
+     for (i = 0; i < numsSize; ++i) {
+          bubble_list[]     
+     }
 }
+#endif
 
+/**
+ * 基数排序
+ * 基数排序的思想是通过设定10个桶，对应的数字就是0~9,                                               
+ * 然后对所有数先以个位数字分类放入桶中，然后逐次取出，                                             
+ * 完成第一轮。然后以10位数字分类再进行同样的操作，完成                                             
+ * 第二轮。直到取到最大值的最高位结束 
+ *
+ * 错误点1：
+ * 重新申请空间时，大小参数错误，只填了个数，没有乘单元大小
+ * 错误点2
+ * 边界判断错误，导致数组访问越界
+ */ 
+int randix_sort(int* nums, int numsSize)                                                            
+{
+     int**   num_list = NULL;
+     int     len = numsSize/10;                                                                  
+     int     max = nums[0];                                                                      
+     int     sort_count = 0;
+     int     bucket_index = 0;
+     int     i = 0;
+     int     j = 0;
+     int     k = 0;
+     int     exp = 1;
 
+     // 找到最大的数
+     for (i = 1; i < numsSize; ++i) {
+          if (nums[i] > max)
+               max = nums[i];
+     }
+     printf("max = %d\r\n", max);
+
+     // 申请桶空间
+     num_list = calloc(1, sizeof(void*)*10);
+     for (i = 0; i < 10; ++i) {
+          num_list[i] = calloc(1, (len + 2)*sizeof(int));
+          num_list[i][0] = len;   // 记录数组当前长度
+          num_list[i][1] = 2;     // 记录下一次要填充位置
+     }
+
+     while (max/exp > 0) {
+          //show_nums(nums, numsSize);
+          // 根据各进制上的数放入桶中
+          for (i = 0; i < numsSize; ++i) {
+               bucket_index = nums[i]/exp%10;
+               // 错误点2
+               if (num_list[bucket_index][1] >= num_list[bucket_index][0]+2) {
+                    num_list[bucket_index][0] *= 2;
+                    // 错误点1
+                    num_list[bucket_index] = realloc(num_list[bucket_index], (num_list[bucket_index][0] + 2)*sizeof(int));         
+               }
+               num_list[bucket_index][num_list[bucket_index][1]++] = nums[i];
+          }       
+
+          // 重新排列出来 
+          k = 0;
+          for (i = 0; i < 10; ++i) {
+               for (j = 2; j < num_list[i][1]; j++) {
+                    nums[k++] = num_list[i][j];
+               }
+               num_list[i][1] = 2;
+          }
+          exp *= 10;
+     }
+#if 1
+     // 释放空间
+     for (i = 0; i < 10; ++i) {
+          free(num_list[i]);
+     }
+     free(num_list);
+#endif
+     return 0;
+}
 
 
 
