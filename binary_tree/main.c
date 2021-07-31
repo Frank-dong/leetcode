@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-	int	nums[] = {'#', 2, 3, 4, '#', '#', 5, 6, '#', 7, 8, 9, 10};
+	int	nums[] = {1, 2, 3, '#', '#', 4, '#', 5, '#', '#', 6, 7, '#', '#', 8, 9, 11, '#', '#', '#', 10, '#', 12, '#', '#'};
 	struct BTreeNode* root = NULL;
 
 	create_btree(nums, sizeof(nums)/sizeof(nums[0]), &root);

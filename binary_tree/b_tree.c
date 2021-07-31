@@ -3,15 +3,22 @@
 #include <string.h>
 #include "b_tree.h"
 
-void create_btree_node(int* nums, int index, int limit, struct BTreeNode** node)
+/**
+ * 以一个中序遍历的数组形式来生成一个二叉树，#表示节点为空
+ */
+void create_btree_node(int* nums, int* index, int limit, struct BTreeNode** node)
 {
-	if (index > limit || nums[index] == '#')
+	if (*index > limit || nums[*index] == '#')
 		return ;
 	*node = calloc(1, sizeof(struct BTreeNode));
-	(*node)->data = nums[index];
+	(*node)->data = nums[*index];
+	printf("add node %d\r\n", nums[*index]);
 
-	create_btree_node(nums, ++index, limit, &(*node)->left);
-	create_btree_node(nums, ++index, limit, &(*node)->right);
+	++(*index);
+	create_btree_node(nums, index, limit, &(*node)->left);
+	
+	++(*index);
+	create_btree_node(nums, index, limit, &(*node)->right);
 }
 
 /**
@@ -23,8 +30,9 @@ void create_btree(int* nums, int nums_size, struct BTreeNode** root)
 	struct BTreeNode* r = NULL;
 	struct BTreeNode* node = NULL;
 	int		i = 0;
+	int		index = 0;
 	
-	create_btree_node(nums, 0, nums_size - 1, root);
+	create_btree_node(nums, &index, nums_size - 1, root);
 }
 
 /**
