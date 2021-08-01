@@ -22,4 +22,15 @@ int main(int argc, char *argv[])
 	printf("post oder traversal: ");
 	post_order_traversal(root);
 	printf("\r\n");
+
+	printf("----------------------\r\n");
+	printf("       NO recursion   \r\n");
+	pre_order_no_recursion(root);
+	printf("\r\n");
+	
+	in_order_no_recursion(root);
+	printf("\r\n");
+	
+	post_order_no_recursion(root);
+	printf("\r\n");
 }

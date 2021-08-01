@@ -11,4 +11,7 @@ void pre_order_traversal(struct BTreeNode* root);
 void in_order_traversal(struct BTreeNode* root);
 void post_order_traversal(struct BTreeNode* root);
 
+int pre_order_no_recursion(struct BTreeNode* root);
+int in_order_no_recursion(struct BTreeNode* root);
+int post_order_no_recursion(struct BTreeNode* root);
 #endif //__B_TREE_H__
