@@ -1,43 +1,46 @@
-/*****************************************************
+/********************************************************
  * 给你二叉树的根结点 root ，请你将它展开为一个单链表：
- * 展开后的单链表应该同样使用 TreeNode ，其中 right
+ *
+ * 展开后的单链表应该同样使用 TreeNode ，其中 right 
  * 子指针指向链表中下一个结点，而左子指针始终为 null 。
  * 展开后的单链表应该与二叉树 先序遍历 顺序相同。
- ****************************************************/
+ * ******************************************************/
 
 /**
- * 通过一个实际的转换例子可以看出，就是将二叉树进行前序遍历
- * 把每个节点串起来形成一个新的链表。
+ * 根据题目里的图例很容易看出，需要变换的顺序，正好就是二叉树
+ * 前序遍历的顺序。所以可以采用前序便利的方法，生成一个新的链
+ * 表，然后遍历链表，修改二叉树节点的左右子节点指针。
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 
 struct TreeNode {
 	int	val;
 	struct TreeNode* left;
-	struct TreeNode* right;	
+	struct TreeNode* right;
 };
 
-struct list_node {
-	void* data;
-	struct list_node* next;
+struct tree_list {
+	struct TreeNode*	node;
+	struct tree_list*	next;
 };
 
 /**
- * 以一个前序遍历的数组形式来生成一个二叉树，#表示节点为空
+ * 在利用递归创建时，需要注意要保证标号(index)每次都会被修改,
+ * 并且每个过程都是递增上去的, 也就是第二个参数index需要传地址
+ * 这是关键
  */
 void create_btree_node(int* nums, int* index, int limit, struct TreeNode** node)
 {
 	if (*index > limit || nums[*index] == '#')
 		return ;
 	*node = calloc(1, sizeof(struct TreeNode));
-	(*node)->val= nums[*index];
-	printf("add node %d\r\n", nums[*index]);
+	(*node)->val = nums[*index];
 
 	++(*index);
 	create_btree_node(nums, index, limit, &(*node)->left);
-	
 	++(*index);
 	create_btree_node(nums, index, limit, &(*node)->right);
 }
@@ -51,58 +54,61 @@ void create_btree(int* nums, int nums_size, struct TreeNode** root)
 	struct TreeNode* r = NULL;
 	struct TreeNode* node = NULL;
 	int		i = 0;
-	int		index = 0;
 	
-	create_btree_node(nums, &index, nums_size - 1, root);
+	create_btree_node(nums, &i, nums_size - 1, root);
 }
-struct list_node* pre_order_tran(struct TreeNode* node, struct list_node* list)
-{
-	if (!node)
-		return list;
-	struct list_node* last = NULL; 
-	struct list_node* lnode = calloc(1, sizeof(struct list_node));	
 
-	printf("add %d\r\n", node->val);
-	lnode->data = node;
-	list->next = lnode;
-	last = pre_order_tran(node->left, lnode);
-	last = pre_order_tran(node->right, last);
-	
+struct tree_list* pre_order_traversal(struct TreeNode* node, struct tree_list* tree)
+{
+	struct tree_list* last = NULL;
+	struct tree_list* new_node = NULL;
+	if (!node)
+		return tree;
+
+	new_node = calloc(1, sizeof(struct tree_list));	
+	new_node->node = node;
+	tree->next = new_node;
+	if (tree->node)
+		printf("last = %d, add %d to list\r\n", tree->node->val, node->val);
+
+	last = pre_order_traversal(node->left, new_node);
+	last = pre_order_traversal(node->right, last);
 	return last;
 }
 
-/**
- * 通过递归方式前序遍历，创建一个新的链表，
- */
-void faltten(struct TreeNode* root)
+void flatten(struct TreeNode* root)
 {
-	struct list_node*	list = NULL;
-	struct list_node*	tmp = NULL;
-	struct TreeNode*	tree_node = NULL;
-	if (!root)
-		return;
-	list = calloc(1, sizeof(struct list_node));
-	pre_order_tran(root, list);
-	printf("trans end\r\n");
-	tmp = list;
+	struct tree_list	list = {NULL, NULL};
+	struct tree_list*	tmp = NULL;
+	struct TreeNode*	tree_tmp = NULL;
+
+
+	// 先遍历生成一个新的链表
+	pre_order_traversal(root, &list);
+
+	// 通过链表修改原节点中的左右指针指向
+	tmp = (&list)->next;
 	while (tmp) {
-		tree_node = (struct TreeNode*)(tmp->data);
-		printf("%d \r\n", tree_node->val);
-		tree_node->left = NULL;
-		tree_node->right = tmp->next->data;
-		tmp = tmp->next;	
+		//printf("%d ", tmp->node->val);			
+		tmp->node->left = NULL;
+		if (tmp->next)
+			tmp->node->right = tmp->next->node;
+		tmp = tmp->next;
 	}
-	printf("\r\n");
+
+	// 遍历新生成的二叉树链表进行验证
+	tree_tmp = root;
+	while (tree_tmp->right) {
+		printf("%d ", tree_tmp->val);			
+		tree_tmp = tree_tmp->right;
+	}
 }
 
-
-void main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
-	int	nums[] = {1, 2, 3, '#', '#', 4, '#', 5, '#', '#', 6, 7, '#', '#', 8, 9, 11, '#', '#', '#', 10, '#', 12, '#', '#'};
+	int	nums[] = {1, 2, 3, 4, '#', '#', 5, '#', '#', 6, '#', 7, '#', '#', 8, 9, '#', '#', 10, '#', 11, '#', '#'};
 	struct TreeNode* root = NULL;
 
 	create_btree(nums, sizeof(nums)/sizeof(nums[0]), &root);
-	printf("create end.\r\n");
-
-	faltten(root);	
+	flatten(root);
 }
