@@ -7,7 +7,7 @@
  * 如果不限定每种物品的数量，称为无界背包问题.
  *
  * 参考链接：
- *	https://zhuanlan.zhihu.com/p/93857890?utm_source=wechat_session
+ *  https://zhuanlan.zhihu.com/p/93857890?utm_source=wechat_session
  *  https://www.bilibili.com/video/BV1tp4y167c5?p=24
  * ******************************************************/
 
@@ -66,14 +66,21 @@ int zero_one_package(struct thing* things_list, int num, int weight_limit)
 					// 当前物品超过限重时, 肯定不能带
 					dp_array[i][j] = dp_array[i-1][j];
 				} else {
-					// 当前物品不超过时, 可带可不带，需要做比较
+					// 当前物品不超过时, 可带可不带，需要做比较 
 					tmp_limit = j - things_list[i].weight;
-					if (tmp_limit <= 0)
+					if (tmp_limit == 0) {
+					    // 刚好等于背包限重，就要看带之前的划算，还是只带当前这个划算 
 						dp_array[i][j] = dp_array[i-1][j] > things_list[i].value ? 
 											dp_array[i-1][j] : things_list[i].value;
-					else
+					} else {
+					    // 物品重量没超过限重，就要看带上划算，还是不带划算
+					    // dp_array[i-1][j]表示不带当前这个物品下的最大值
+					    // dp_array[i-1][tmp_limit] + things_list[i].value 表示不带当前物品，前几个物品在限重
+					    // 为（剩余重量空间的最大值（这是为了给当前物品腾出空间））的最大值，再加上当前物品重量
+					    // 两者比较
 						dp_array[i][j] = dp_array[i-1][j] > (dp_array[i-1][tmp_limit] + things_list[i].value) 
 										? dp_array[i-1][j] : (dp_array[i-1][tmp_limit] + things_list[i].value);
+					}
 				}
 			}
 			//printf("dp[%d][%d] = %d\r\n", i, j, dp_array[i][j]);
@@ -97,12 +104,19 @@ int zero_one_package_yh(struct thing* things_list, int num, int weight_limit)
 	dp_array = calloc(1, sizeof(int)*(weight_limit + 1));
 
 	for (i = 0; i < num; ++i) {
+	    // 优化后使用一维数组来处理，必须从后往前遍历，以保证本轮的数据不会被破坏
 		for (j = weight_limit; j >= things_list[i].weight; --j) {
+		    // 计算带上这个物品的最大价值，此时的dp_array[j - things_list[i].wight] 还是
+		    // 上一轮的结果
 			get_this_value = dp_array[j - things_list[i].weight] + things_list[i].value;
+
+			// 用来作比较的dp_array[j]还是上一轮的，也就是物品数量i-1那一轮的结果。
+			// 本轮做了比较之后进行更新
 			dp_array[j] = dp_array[j] > get_this_value ? dp_array[j] : get_this_value;
 		}
 	}
 
+    // 最后的结果就是最后一个元素的值
 	return dp_array[weight_limit];
 }
 int main(int argc, char*argv[])
@@ -120,6 +134,6 @@ int main(int argc, char*argv[])
 		{2, 120},
 	};
 	
-	printf("rst = %d.\r\n", zero_one_package_yh(thing_list, 10, 30));
+	printf("rst = %d.\r\n", zero_one_package_yh(thing_list, 10, 20));
 	//printf("rst = %d.\r\n", zero_one_package(thing_list, 10, 30));
 }
