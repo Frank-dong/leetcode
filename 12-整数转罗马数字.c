@@ -122,11 +122,63 @@ char * intToRoman(int num)
 	return str;
 }
 
+
+struct Roman_val {
+	char	sym[12];
+	int		val;
+};
+/**
+ * 上面的算法显然不是出题者想要的解法。
+ * 可以使用贪心算法, 把所有表示数值的字符罗列出来，然后拆解数字
+ * 寻找当前满足的最大的值，最后组合出来的就是需要的字符串。
+ */
+char * intToRoman_1(int num)
+{
+	// 由于使用贪心算法，所以列表顺序由大值到小值罗列
+	struct Roman_val val_list[] = {
+		{"M", 1000},
+		{"CM", 900},
+		{"D", 500},
+		{"CD", 400},
+		{"C", 100},
+		{"XC", 90},
+		{"L", 50},
+		{"XL", 40},
+		{"X", 10},
+		{"IX", 9},
+		{"V", 5},
+		{"IV", 4},
+		{"I", 1},
+		{"", 0}	// 结束标志
+	};
+	char*	rst = NULL;
+	int		pos = 0;
+	int		i = 0;
+
+	rst = calloc(1, 100);
+	while (num > 0) {
+		for (i = 0; val_list[i].val != 0; ++i) {
+			if (num >= val_list[i].val) {
+				strcpy(rst + pos, val_list[i].sym);
+				pos += strlen(val_list[i].sym);
+				num -= val_list[i].val;
+				break;
+			}
+		}
+	}
+	return rst;
+}
+
+
 int main(int argc, char* argv[])
 {
 	char*	rst = intToRoman(atoi(argv[1]));
 
 	printf("rst = %s\r\n", rst);
+
+	rst = intToRoman_1(atoi(argv[1]));
+	printf("rst = %s\r\n", rst);
+	
 	free(rst);
 
 	return 0;

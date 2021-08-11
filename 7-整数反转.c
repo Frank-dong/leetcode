@@ -8,6 +8,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "limits.h"
 
 /**
  * 这道题主要是在数字顺序的调整上，可以把数字转换成字符，
@@ -39,12 +40,15 @@ int reverse(int x)
 		start = 1;
 	}
 
+	// 交换字符
 	j = num_len - 1;
 	for (i = start; i < (num_len-start)/2 + start; ++i, j--) {
 		tmp = buf[i];
 		buf[i] = buf[j];
 		buf[j] = tmp;
 	}
+
+	// 处理两端极值的特殊情况
 	if (start == 1) {
 		if (num_len > len_limit+1 ||
 			(num_len == len_limit+1 &&  strcmp(min_limit, buf) < 0)) {
@@ -56,6 +60,7 @@ int reverse(int x)
 		}
 	}
 
+	// 返回正常的转换值
 	return atoi(buf);	
 }
 
@@ -75,16 +80,13 @@ int reverse_1(int x)
 			rst = rst*10 + x;
 			break;
 		}
-		remainder = x % 10;
+		remainder = x % 10;	// 余数
 		x = x/10;
-		if (first == 0) {
-			rst += remainder;
-			first = 1;
-		} else {
-			rst = (rst*10 + remainder);
-		}
+		rst = rst*10 + remainder;
 	}
-	if (rst > 0x7fffffff-1 || rst < (0-0x7fffffff))
+	// 注意：这里建议使用INT_MAX, INT_MIN, 如果使用数值，应该加上(int)
+	if (rst > (int)0x7fffffff || rst < (int)0x80000000)
+	//if (rst > INT_MAX || rst < INT_MIN)
 		return 0;
 	else
 		return (int)rst;
@@ -93,6 +95,7 @@ int main(int argc, char* argv[])
 {
 	char*	rst = NULL;
 
+	printf("0x%x, 0x%x, %d, %d\r\n", INT_MIN, INT_MAX, INT_MIN, INT_MAX);
 	//printf("%d\r\n", atoi("42949672990"));	
 	printf("%d\r\n", reverse_1(atoi(argv[1])));
 

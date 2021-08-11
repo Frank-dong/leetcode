@@ -1,6 +1,7 @@
 /********************************************************
  * 将一个给定字符串 s 根据给定的行数 numRows ，以从上往
- * 下、从左到右进行 Z 字形排列。
+ * 下、从左到右进行 Z 字形排列。之后，你的输出需要从左往
+ * 右逐行读取，产生出一个新的字符串
  * |  /|  /|
  * | / | / |
  * |/  |/  |
@@ -90,30 +91,11 @@ char * convert_z(char * s, int numRows)
  * 找应该填充旧串的某个位置的字符。相比较来说，第二种更容易理解
  * 和找到合适的规律，也就更容易实现一些。
  */
-char * convert_1(char * s, int numRows)
-{
-	int		str_len = 0;
-	int		pos = 0;
-	int		i = 0;
-	int		j = 0;
-	int		circle_len = 0;
-	char*	new_str = NULL;
 
-	if (numRows == 1) {
-		return s;
-	}
-	circle_len = 2 * numRows - 2;
-	str_len = strlen(s);
-	new_str = calloc(1, sizeof(char)*(str_len+1));	
-	for (i = 0; i < numRows; ++i) {
-		for (j = 0; j < str_len; ++j) {
-			if (j % circle_len == i || j % circle_len == (circle_len - i))
-				new_str[pos++] = *(s+j);
-		}
-	}
-	return new_str;
-}
-char * convert_2(char * s, int numRows)
+/**
+ * 每一行先单独保存，通过找规律，直接填充到对应的行, 最后再合并
+ */
+char * convert_1(char * s, int numRows)
 {
 	int	column = 0;
 	int	i = 0;
@@ -150,6 +132,35 @@ char * convert_2(char * s, int numRows)
 	}	
 	free(len_list);
 	free(col_list);
+	return new_str;
+}
+
+/** 
+ * 直接找位置关系填充
+ */
+char * convert_2(char * s, int numRows)
+{
+	int		str_len = 0;
+	int		pos = 0;
+	int		i = 0;
+	int		j = 0;
+	int		circle_len = 0;
+	char*	new_str = NULL;
+
+	if (numRows == 1) {
+		return s;
+	}
+	// 计算得到循环单元长度
+	circle_len = 2 * numRows - 2;
+	str_len = strlen(s);
+	new_str = calloc(1, sizeof(char)*(str_len+1));	
+	for (i = 0; i < numRows; ++i) {
+		for (j = 0; j < str_len; ++j) {
+			// 遍历字符串，将符合条件的字符填入新字符串中
+			if (j % circle_len == i || j % circle_len == (circle_len - i))
+				new_str[pos++] = *(s+j);
+		}
+	}
 	return new_str;
 }
 

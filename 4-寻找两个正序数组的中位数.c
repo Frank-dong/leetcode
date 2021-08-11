@@ -8,6 +8,9 @@
  * ******************************************************/
 #include <stdio.h>
 
+/**
+ * 这道题最简单的就是归并的想法，在归并过程中确定中间值.
+ */
 double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Size)
 {
 	int		index_1 = 0;
