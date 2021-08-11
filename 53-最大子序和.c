@@ -61,10 +61,16 @@ int maxSubArray(int* nums, int numsSize)
  * 再次审题，转换思路，把关注点放在题目的最终解上，即最终
  * 求解的最大值上。求出以i下标结尾的子串的最大和，这样就只用
  * 一个一位数组就可以保存dp结果。
+ * 
+ * 这里最关键的一个思维转换是要看当前节点的值是正作用还是反作用
+ * 以此来判断是否丢弃从此节点开启一个新的区间.
+ *
  * 考虑nums[i]是单独成为一段，还是加入上一个段，结果取决于
  * dp[i-1]+nums[i] 和 nums[i] 的值. 通过这个也可以看出来，当前结果只
  * 与上一结果相关，所以也不用一维数组了，一个整形变量保存即可。 
  * 这样时间复杂度就降低为O(n)， 空间复杂度降低为O(1)
+ *
+ * 其实这个也可以理解为是贪心算法的一种
  */
 int maxSubArray_1(int* nums, int numsSize)
 {
@@ -76,7 +82,14 @@ int maxSubArray_1(int* nums, int numsSize)
 	for (i = 0; i < numsSize; ++i) {
 		//pre = (pre + nums[i]) > pre ? (pre + nums[i]) : pre;
 		//max = max < pre ? pre : max;
-		pre = fmax(pre + nums[i], nums[i]);
+		/** 
+		 * 这一处理不好理解，由于是限制连续数列，所以这里比较的是
+		 * 前面的数列和+当前节点 和 当前节点的值作比较
+		 * 相当于是判断前面的节点对当前节点起正作用(增大)还是反作用(减小)
+		 * 所以这里其实还可以有另外一种表达方式
+		 */
+		//pre = fmax(pre + nums[i], nums[i]);	
+		pre = pre < 0 ? nums[i] : (pre + nums[i]);
 		max = fmax(max, pre);
 	}
 	return max;
