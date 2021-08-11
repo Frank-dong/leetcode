@@ -18,6 +18,8 @@ int compare_int(void* num1, void* num2)
 /**
  * 注意这个题中的intervals参数, 是一个二级指针，在访问是要注意。
  * 在快排的回调函数中要注意指针的转换，和值的访问。
+ *
+ * 这道题目是贪心算法的典型案例，局部最优解，就是全局最优解
  */
 int eraseOverlapIntervals(int** intervals, int intervalsSize, int* intervalsColSize)
 {
