@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <math.h>
 /**
  * 在字符串中寻找包含子串的最短子串，最简单就是暴力遍历，但
  * 时算法复杂度就是O(n^2)。
@@ -26,18 +27,25 @@ char * minWindow(char * s, char * t)
 	int	tlen = strlen(t);
 	int	cur_total = 0;			// 记录检索到的总数
 	int	target_total = tlen;	// 记录目标字符的总数
-	int	tar_hash[52] = {0};	// 题目提示里面字符串都是由字母组成
+	int	tar_hash[128] = {0};	// 题目提示里面字符串都是由字母组成
 							// 所有这里只需要统计52个字母
-	int	cur_hash[52] = {0};
+							// 但是由于ascii码中大小写字母并没有
+							// 连续着排列，所以需要再定义大一点
+							// 应该是z - A + 1的大小，所有字母索引
+							// 为 $ - 'A';
+							// 或者最简单，直接定义128个就可以直接
+							// 以字母的ascii值来当作下标访问，更加方便
+	int	cur_hash[128] = {0};
 	int	left = 0;
 	int	right = 0;
 	int	i = 0;
 	int	min_len = INT_MAX;
 	int	min_pos = 0;
 
+	if (tlen > slen) return "";
 	// 统计目标字符串中各个字符的出现个数
 	for (i = 0; i < tlen; ++i) 
-		tar_hash[s[i]]++;
+		tar_hash[t[i]]++;
 
 	// 退出条件：右边界到字符串结尾
 	while (right < slen) {
@@ -58,31 +66,44 @@ char * minWindow(char * s, char * t)
 		}
 
 		// 包含所有字母后，移动左边界
+		// 这里其实不会出现left超过right的情况，因为前面right移动的时候已经保证了
+		// 窗口内包含了目标字符串，移动left缩小窗口，只是裁剪，肯定能裁剪到一个当
+		// 前最小窗口，所以left不会超过right
 		while (left < right) {
+			// 不在目标串内的直接跳过
 			if (tar_hash[s[left]] == 0) {
 				left++;
 				continue;
 			}
 		
-			cur_hash[left]--;
+			cur_hash[s[left]]--;
 			// 此时左边到边界上了
 			if ((cur_hash[s[left]]) < tar_hash[s[left]]) {
-				cur_total--;
-				printf("update min\r\n");
+				//printf("update min, left = %d, right = %d\r\n", left, right);
 				// 如果更小，就更新最小值
 				if (min_len > (right - left + 1)) {
-					min_len = min_len < right - left + 1;
-					printf("update min %d\r\n", min_len);
+					min_len = right - left + 1;
+					//printf("update min %d\r\n", min_len);
 					min_pos = left;
 				}
+				cur_total--;
+				left++;
+				right++;
 				break;
 			}
 			left++;
 		}
-		left++;	
+		if (left == right) {
+			if (min_len > 0) {
+				min_len = 1;
+				min_pos = left;
+				break;
+			}
+		}
+		// 窗口左边界到头后，再次扩大右边界，继续寻找可能结果
 	}
 	if (min_len == INT_MAX) {
-		return NULL;
+		return "";
 	} else {
 		s[min_pos + min_len] = '\0';
 		return s + min_pos;
