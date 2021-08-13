@@ -48,6 +48,13 @@ char ** generateParenthesis(int n, int* returnSize)
 	return rst_list;
 }
 
+
+/**
+ * 考虑使用动态规划的方式来做
+ */
+
+
+
 int main(int argc, char* argv[])
 {
 	char**	rst_list = NULL;
