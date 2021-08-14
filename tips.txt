@@ -139,8 +139,15 @@
 1. 是ACM模式，需要自己写全部代码，包括输入速出。
 
 2. 获取输入使用scanf，多个case的，使用:
-	while (scanf("%s", input_buf) != EOF) {}
-	while (gets(input_buf) != NULL) {}
+	while (scanf("%s", input_buf) != EOF) {}	// 遇到空格会返回
+	while (gets(input_buf) != NULL) {}	// 读取整个行, 也可以使用fgets(input_buf, 1024, stdin)
+	如果是一行中有空格分割数字，可以采用上面的方式一次读取完，然后解析，也可以使用scanf和getchar来读取：
+	scanf读取到空格或者回车时就退出了，此时用getchar再读取一个,用来判断回车，判断结束。
+	while (scanf("%d", &num) != EOF) {
+		if (getchar() == '\n') {
+			//xxx
+		}
+	}
 
 	注意，scanf读取时遇到空格就退出了，为了避免这样，可以这样读取 scanf("%[^\n]%*c", input_buf), 就是遇到\n再返回，后面的%*c是为了再多读走一个字符，就是\n,不然就\n还在输入缓存里，一直死循环返回.
 

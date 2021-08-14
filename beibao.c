@@ -26,7 +26,7 @@
  *		n = 1, f(1, W) = Wn > W ? Vn : 0
  *		n = 2, f(2, W) = max(f(1, W), f(1, W-W1) + V1)
  *		...
- *		n = N, f(N, W) = max(f(N-1, W), f(N-1), W-WN + VN)
+ *		n = N, f(N, W) = max(f(N-1, W), f(N-1, W-WN) + VN)
  * }
  *
  * 定义DP数组：由状态转义方程可以看出,需要计算的子问题个数有N*W个，

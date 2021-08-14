@@ -154,7 +154,9 @@ char * convert_2(char * s, int numRows)
 	circle_len = 2 * numRows - 2;
 	str_len = strlen(s);
 	new_str = calloc(1, sizeof(char)*(str_len+1));	
-	for (i = 0; i < numRows; ++i) {
+
+	// 在推演过程中发现，字母分布是与行号相关联的，所以在此要以行号为循环变量
+	for (i = 0; i < numRows; ++i) { 
 		for (j = 0; j < str_len; ++j) {
 			// 遍历字符串，将符合条件的字符填入新字符串中
 			if (j % circle_len == i || j % circle_len == (circle_len - i))
