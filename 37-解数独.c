@@ -60,7 +60,7 @@ bool fill_num(char** board, char** used, int row, int col)
 	if (end_flag == 1)
 		return true;
 
-	// 判断结束条件
+	// 判断结束条件: 最后一行填满值
 	for (i = 0; i < 9; ++i) {
 		if (board[8][i] == '.') {
 			end_flag = 0;

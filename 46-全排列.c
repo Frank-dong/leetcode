@@ -27,7 +27,7 @@ void arrange(int* nums, int numsSize, int* used, int* rst, int index, int** rst_
 
 	for (i = 0; i < numsSize; ++i) {
 		if (used[i] == 0) { 
-			// 选择路径
+			// 选择路径 (这里的路径就相当于是选择到了第几个数值, 这个是在used里面标注)
 			rst[index] = nums[i];
 			used[i] = 1;
 			arrange(nums, numsSize, used, rst, index + 1, rst_list, rst_num);

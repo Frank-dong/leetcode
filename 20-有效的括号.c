@@ -50,11 +50,11 @@ bool isValid(char * s)
 	for (i = 0; i < deep; ++i) {
 		chr = pair_char(s[i]);
 		printf("input %c, output %c\r\n", s[i], chr);
-		if (chr) {
+		if (chr) {	// 遇到右括号,则出栈一个左括号，若不匹配，就是无效的括号
 			if (top < 0 || (stack[top--] != chr)) {
 				return false;
 			}
-		} else {
+		} else {	// 左括号入栈
 			stack[++top] = s[i];
 		}
 	}
